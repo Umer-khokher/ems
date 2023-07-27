@@ -312,85 +312,126 @@
 
       form.attr("action", "{{ route('admin.attendence.edit', ['id' => '']) }}" + attendanceId);
 
+      // Show the form beside the clicked TD
       var position = td.position();
       var top = position.top + td.height();
       var left = position.left;
       form.css({ top: top, left: left }).show();
+
+      // Hide the attendanceTableDiv when a td is clicked
       $("#attendanceTableDiv").hide();
+
+      // Show the attendanceeditDiv when a td is clicked
       $("#attendanceeditDiv").show();
     });
+
+    // Prevent hiding the attendanceeditDiv when clicking inside it
     $("#attendanceeditDiv").click(function (event) {
       event.stopPropagation();
     });
+
+    // Handle click on the document to hide the dropdown when clicking outside of it
     $(document).click(function (event) {
       $(".dropdown-content").hide();
+
+      // Show the attendanceTableDiv when clicking outside of a td
       $("#attendanceTableDiv").show();
-      $("#attendanceeditDiv").hide();
-    });
-    $(".status-select").change(function (event) {
-      event.stopPropagation();
-      var selectedStatus = $(this).val();
-      var form = $(this).closest("form");
-      form.find("input[name='status']").val(selectedStatus);
-      form.submit();
-      $("#attendanceTableDiv").show();
+
+      // Hide the attendanceeditDiv when clicking outside of a td
       $("#attendanceeditDiv").hide();
     });
   });
 </script>
 <script>
   $(document).ready(function () {
+    // ... (existing code) ...
 
+    // Handle form submission via AJAX on select change
     $(".status-select").change(function (event) {
-      event.stopPropagation();
+      
+      event.stopPropagation(); // Prevent event bubbling to the document
       var selectedStatus = $(this).val();
       var form = $(this).closest("form");
       form.find("input[name='status']").val(selectedStatus);
+      alert(form.attr("action"));
+      // AJAX form submission
       $.ajax({
         url: form.attr("action"),
         method: form.attr("method"),
         data: form.serialize(),
         success: function (response) {
-          console.log("Form submitted successfully!");
-          if (response.success) {
-            alert(response.success);
-            window.location.reload();
+          console.log(response)
+          // Handle success response, if needed
+
+          // Show the success message (if available) and update the page accordingly
+          if (response.status == 'success') {
+            // Show the success message using a suitable method (e.g., alert, toast, etc.)
+            alert(response.message);
+            // $('.cell'+id).removeClass('status-late');
+            // $('.cell'+id).removeClass('status-present');
+            // $('.cell'+id).removeClass('status-leave');
+            
+            // $('.cell'+id).addClass('status-late');
+          }else {
+            alert(response.message);
           }
         },
         error: function (xhr, status, error) {
+          // Handle error response, if needed
           console.error("Form submission failed!");
           alert("An error occurred during the form submission.");
         },
       });
+
+      // Show the attendanceTableDiv after form submission
       $("#attendanceTableDiv").show();
+
+      // Hide the attendanceeditDiv after form submission
       $("#attendanceeditDiv").hide();
     });
-    // $("#submitBtn").click(function (event) {
-    //   event.preventDefault();
-    //   alert("helloooo");
 
-    //   var form = $(this).closest("form");
-    //   var selectedStatus = form.find(".status-select").val();
-    //   form.find("input[name='status']").val(selectedStatus);
-    //   $.ajax({
-    //     url: form.attr("action"),
-    //     method: form.attr("method"),
-    //     data: form.serialize(),
-    //     success: function (response) {
-    //       console.log("Form submitted successfully!");
-    //       if (response.success) {
-    //         alert(response.success);
-    //         window.location.reload();
-    //       }
-    //     },
-    //     error: function (xhr, status, error) {
-    //       console.error("Form submission failed!");
-    //       alert("An error occurred during the form submission.");
-    //     },
-    //   });
-    //   $("#attendanceTableDiv").show();
-    //   $("#attendanceeditDiv").hide();
-    // });
+    // Handle form submission via AJAX when submit button is clicked
+    $("#submitBtn").click(function (event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      var form = $(this).closest("form");
+      var selectedStatus = form.find(".status-select").val();
+      form.find("input[name='status']").val(selectedStatus);
+
+      // AJAX form submission
+      $.ajax({
+        url: form.attr("action"),
+        method: form.attr("method"),
+        data: form.serialize(),
+        success: function (response) {
+          // Handle success response, if needed
+          console.log("Form submitted successfully!");
+
+          // Show the success message (if available) and update the page accordingly
+          if (response.success) {
+            // Show the success message using a suitable method (e.g., alert, toast, etc.)
+            alert(response.success);
+
+            // Update the page content if needed (e.g., refresh the table or update some elements)
+            // ...
+
+            // Reload the page to reflect the changes in the table, if necessary
+            //window.location.reload();
+          }
+        },
+        error: function (xhr, status, error) {
+          // Handle error response, if needed
+          console.error("Form submission failed!");
+          alert("An error occurred during the form submission.");
+        },
+      });
+
+      // Show the attendanceTableDiv after form submission
+      $("#attendanceTableDiv").show();
+
+      // Hide the attendanceeditDiv after form submission
+      $("#attendanceeditDiv").hide();
+    });
   });
 </script>
 

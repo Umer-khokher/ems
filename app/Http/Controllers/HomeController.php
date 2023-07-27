@@ -151,10 +151,10 @@ class HomeController extends Controller
         // Use the correct syntax to update the status in the database
         $is = Attendance::where('id', $id)->update(['status' => $status]);
         if($is){
-            return response()->back()->with('success', 'Attendance updated successfully!');
+            return response()->json(['status' =>'success', 'message' => 'Attendance updated successfully']);
 
         }else{
-        return redirect()->back()->with('error', 'some error!');
+            return response()->json(['status' =>'error', 'message' => 'some error']);
         }
     
     }
