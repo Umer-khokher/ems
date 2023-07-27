@@ -241,13 +241,8 @@
                     $cellClass = $isWeekend ? 'purple-cell ' : '';
                     $cellClass .= 'status-' . $status;
                 @endphp
-                <td class="{{ $cellClass }}" data-attendance-id="{{ $id }}">
-                                <div class="tdlin">
-                                    <!-- Clicking on this <a> tag will toggle the form -->
-                                    <a href="#">
-                                        <!-- Add any content you want to show in the <td> -->
-                                        
-                                    </a>                                       
+                <td class="{{ $id }} {{ $cellClass }}" data-attendance-id="{{ $id }}">
+                                <div class="tdlin">                                  
                                     </div>
                                 </div>
                             </td>
@@ -344,36 +339,37 @@
 </script>
 <script>
   $(document).ready(function () {
-    // ... (existing code) ...
-
-    // Handle form submission via AJAX on select change
     $(".status-select").change(function (event) {
-      
       event.stopPropagation(); // Prevent event bubbling to the document
       var selectedStatus = $(this).val();
       var form = $(this).closest("form");
       form.find("input[name='status']").val(selectedStatus);
-      alert(form.attr("action"));
-      // AJAX form submission
+      // alert(form.attr("action"));
+
       $.ajax({
         url: form.attr("action"),
         method: form.attr("method"),
         data: form.serialize(),
         success: function (response) {
-          console.log(response)
           // Handle success response, if needed
+          console.log(response);
 
-          // Show the success message (if available) and update the page accordingly
-          if (response.status == 'success') {
-            // Show the success message using a suitable method (e.g., alert, toast, etc.)
-            alert(response.message);
-            // $('.cell'+id).removeClass('status-late');
-            // $('.cell'+id).removeClass('status-present');
-            // $('.cell'+id).removeClass('status-leave');
+          // Show the success message (if available)
+          alert(response.message);
+
+          // Access the additional data if present
+          if (response.status === 'success' && response.data) {
+            var attendanceId = response.data.attendance_id;
+            var newStatus = response.data.new_status;
             
-            // $('.cell'+id).addClass('status-late');
-          }else {
-            alert(response.message);
+            alert(attendanceId);
+            alert(newStatus);
+            // Update the cell's class based on the new status
+            var cell = $('[data-attendance-id="' + attendanceId + '"]').closest('td');
+            // alert(cell);
+            cell.removeClass('status-late status-present status-leave status-absent');
+            cell.addClass('status-' + newStatus);
+
           }
         },
         error: function (xhr, status, error) {
@@ -390,49 +386,10 @@
       $("#attendanceeditDiv").hide();
     });
 
-    // Handle form submission via AJAX when submit button is clicked
-    $("#submitBtn").click(function (event) {
-      event.preventDefault(); // Prevent the default form submission
-
-      var form = $(this).closest("form");
-      var selectedStatus = form.find(".status-select").val();
-      form.find("input[name='status']").val(selectedStatus);
-
-      // AJAX form submission
-      $.ajax({
-        url: form.attr("action"),
-        method: form.attr("method"),
-        data: form.serialize(),
-        success: function (response) {
-          // Handle success response, if needed
-          console.log("Form submitted successfully!");
-
-          // Show the success message (if available) and update the page accordingly
-          if (response.success) {
-            // Show the success message using a suitable method (e.g., alert, toast, etc.)
-            alert(response.success);
-
-            // Update the page content if needed (e.g., refresh the table or update some elements)
-            // ...
-
-            // Reload the page to reflect the changes in the table, if necessary
-            //window.location.reload();
-          }
-        },
-        error: function (xhr, status, error) {
-          // Handle error response, if needed
-          console.error("Form submission failed!");
-          alert("An error occurred during the form submission.");
-        },
-      });
-
-      // Show the attendanceTableDiv after form submission
-      $("#attendanceTableDiv").show();
-
-      // Hide the attendanceeditDiv after form submission
-      $("#attendanceeditDiv").hide();
-    });
+    // ... (existing code) ...
   });
 </script>
+
+   
 
 </x-dashboard-layout>

@@ -139,23 +139,20 @@ class HomeController extends Controller
         );
         return view('admin.uaedit')->with($viewData);    
     }
-    public function submitedit(Request $request)
+        public function submitedit(Request $request)
     {
-        // echo ($request->id);
-        // echo ($request->status);
-        // // echo ($request->new_status);
-        // die;
         $id = $request->id;
         $status = $request->status;
-    
-        // Use the correct syntax to update the status in the database
-        $is = Attendance::where('id', $id)->update(['status' => $status]);
-        if($is){
-            return response()->json(['status' =>'success', 'message' => 'Attendance updated successfully']);
-
-        }else{
-            return response()->json(['status' =>'error', 'message' => 'some error']);
+        $isUpdated = Attendance::where('id', $id)->update(['status' => $status]);
+        if ($isUpdated) {
+            // $updatedAttendance = Attendance::where('id', $id)->first();
+            $data = [
+                'attendance_id' => $id,
+                'new_status' => $status,
+            ];
+            return response()->json(['status' => 'success', 'message' => 'Attendance updated successfully', 'data' => $data]);
+        } else {
+            return response()->json(['status' => 'error', 'message' => 'Some error occurred']);
         }
-    
     }
 }
